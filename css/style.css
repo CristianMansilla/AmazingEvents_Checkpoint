@@ -158,9 +158,9 @@ header{
 
 .card-text{
     /* background-color: #b3b3b3; */
-    min-height: 70px;
-    max-height: 70px;
-    overflow-y: scroll;
+    min-height: 72px;
+    max-height: 72px;
+    overflow-y: auto;
 }
 
 /* Scrollbar */
