@@ -6,7 +6,7 @@ const data={
             "name":"Collectivities Party",
             "date":"2021-12-12",
             "description":"Enjoy your favourite dishes, from different countries, in a unique event for the whole family.",
-            "category":"Food Fair",
+            "category":"FoodFair",
             "place":"Room A",
             "capacity":45000,
             "assistance":42756,
@@ -17,7 +17,7 @@ const data={
             "name":"Korean style",
             "date":"2021-08-12",
             "description":"Enjoy the best Korean dishes, with international chefs and awesome events.",
-            "category":"Food Fair",
+            "category":"FoodFair",
             "place":"Room A",
             "capacity":45000,
             "assistance":42756,
@@ -50,7 +50,7 @@ const data={
             "name":"Comicon",
             "date":"2021-02-12",
             "description":"For comic lovers, all your favourite characters gathered in one place.",
-            "category":"Costume Party",
+            "category":"CostumeParty",
             "place":"Room C",
             "capacity":120000,
             "assistance":110000,
@@ -61,7 +61,7 @@ const data={
             "name":"Halloween Night",
             "date":"2022-02-12",
             "description":"Come with your scariest costume and win incredible prizes.",
-            "category":"Costume Party",
+            "category":"CostumeParty",
             "place":"Room C",
             "capacity":12000,
             "estimate":9000,
@@ -72,7 +72,7 @@ const data={
             "name":"Metallica in concert",
             "date":"2022-01-22",
             "description":"The only concert of the most emblematic band in the world.",
-            "category":"Music Concert",
+            "category":"MusicConcert",
             "place":"Room A"
             ,"capacity":138000,
             "estimate":138000,
@@ -83,7 +83,7 @@ const data={
             "name":"Electronic Fest",
             "date":"2021-01-22",
             "description":"The best national and international DJs gathered in one place.",
-            "category":"Music Concert",
+            "category":"MusicConcert",
             "place":"Room A",
             "capacity":138000,
             "assistance":110300,
@@ -116,7 +116,7 @@ const data={
             "name":"School's book fair",
             "date":"2022-10-15",
             "description":"Bring your unused school book and take the one you need.",
-            "category":"Book Exchange",
+            "category":"BookExchange",
             "place":"Room D1",
             "capacity":150000,
             "estimate":123286,
@@ -127,7 +127,7 @@ const data={
             "name":"Just for your kitchen",
             "date":"2021-11-09",
             "description":"If you're a gastronomy lover come get the cookbook that best suits your taste and your family's.",
-            "category":"Book Exchange",
+            "category":"BookExchange",
             "place":"Room D6",
             "capacity":130000,
             "assistance":90000,
@@ -159,31 +159,70 @@ const data={
 }
 const $cardsContainer = document.getElementById("cards-container");
 
-function paintDom(dateDom){
-    const div = document.createElement("div");
-    div.classList.add("col");
-    div.innerHTML = `
-    <div class="card h-210">
-        <img src="${dateDom.image}" class="card-img-top" alt="">
-        <div class="card-body d-flex flex-column align-items-center">
-            <div>
-                <h5 class="card-title">${dateDom.name}</h5>
-                <p class="card-text">${dateDom.description}</p>
-                <p class="card-category">${dateDom.category}</p>
-            </div>
-            <div class="price d-flex justify-content-between align-items-start">
-                <p>Price $${dateDom.price}</p>
-                <a id="seeMore" href="./pages/details.html"><button class="button">See more</button></a>
-            </div>
-        </div>
-    </div>
-    `
-    $cardsContainer.appendChild(div);
-};
+/* Filtrado de productos */
+createCards();
 
-data.eventos.forEach((event)=>{
-    paintDom(event)
-})
+function createCards(){
+    for (let i of data.eventos) {
+        //Creamos la Card Container
+        let cardContainer = document.createElement("div");
+        //Card Container tienen categorias y están ocultas inicialmente
+        cardContainer.classList.add("col", i.category, "hidden");
+        // cardContainer.classList.add("col");
+        //Card
+        let card = document.createElement("div");
+        card.classList.add("card", "h-210");
+        cardContainer.appendChild(card);
+        
+        //image card
+        let image = document.createElement("img");
+        image.setAttribute("src", i.image);
+        image.classList.add("card-img-top");
+        
+        //Card body
+        let cardBody = document.createElement("div");
+        cardBody.classList.add("card-body", "d-flex", "flex-column", "align-items-center");
+        card.appendChild(image);
+        card.appendChild(cardBody);
+        
+        //Card body up
+        let cardBodyUp = document.createElement("div");
+        
+        let cardTitle = document.createElement("h5");
+        cardTitle.classList.add("card-title");
+        cardTitle.innerText = i.name;
+        
+        let cardText = document.createElement("p");
+        cardTitle.classList.add("card-text");
+        cardText.innerText = i.description;
+        cardBodyUp.appendChild(cardTitle);
+        cardBodyUp.appendChild(cardText);
+        
+        //Card body bottom
+        let cardBodyBottom = document.createElement("div");
+        cardBodyBottom.classList.add("price", "d-flex", "justify-content-between", "align-items-start");
+        
+        let cardPrice = document.createElement("p");
+        cardPrice.innerText = "Price $"+i.price;
+
+        let cardSeeMore = document.createElement("a");
+        cardSeeMore.setAttribute("href", "./pages/details.html");
+        cardSeeMore.setAttribute("id", "seeMore");
+        // cardSeeMore.id("seeMore")
+        cardBodyBottom.appendChild(cardPrice);
+        cardBodyBottom.appendChild(cardSeeMore);
+
+        let cardButton = document.createElement("button");
+        cardButton.innerText = "See More";
+        cardSeeMore.appendChild(cardButton);
+
+        cardBody.appendChild(cardBodyUp);
+        cardBody.appendChild(cardBodyBottom);
+
+        $cardsContainer.appendChild(cardContainer);
+  }
+}
+
 
 //Renderizar las categorias dinamicamente
 const $categoryInputs = document.getElementById("category__inputs");
@@ -195,7 +234,7 @@ let categorySinDuplicados = [...new Set(category)];
 function paintCategories(categoryArray){
     const div = document.createElement("div");
     div.innerHTML = `
-    <input type="checkbox" name="category${categoryArray}" id="${categoryArray}" class="categoryCheckbox categoryInput" value="${categoryArray}">
+    <input type="checkbox" name="category${categoryArray}" id="${categoryArray}" class="categoryCheckbox categoryInput" value="${categoryArray}" onclick="filterProduct('${categoryArray}')">
     <label class="category-tittle" for="${categoryArray}">${categoryArray}</label>
     `
     $categoryInputs.appendChild(div);
@@ -204,44 +243,55 @@ categorySinDuplicados.forEach((category)=>{
     paintCategories(category);
 })
 
-//Filtrado mediante input de tipo text
-const $inputEvents = document.getElementById("inputEvents");
-const $inputSearch = document.getElementById("inputSearch");
-const $cards = document.querySelectorAll(".col");
 
-$inputEvents.addEventListener("keyup", (event)=>{
-    // console.log("event.target.value", event.target.value) 
-    $cards.forEach((card)=>{
-        card.textContent.toLowerCase().includes(event.target.value.toLowerCase())
-        ? card.classList.remove("hidden") // Si cae en true la sentencia anterior, ocurre esto
-        : card.classList.add("hidden");  // Si cae en false la sentencia anterior, ocurre esto
-        // SI NO ENCUENTRA RESULTADOS; ESTARÍA RE BUENO MOSTRAR UN MENSAJE EN LA PANTALLA
+const inputs = document.querySelectorAll('input[type="checkbox"]');
+
+//Parametro pasado del boton (categoria)
+function filterProduct(value) {
+    /* let $texto = document.querySelectorAll(".category-tittle");
+    $texto.forEach((button) =>{
+      if (value.toUpperCase() == button.innerText.toUpperCase()) {
+        button.classList.add("active");
+      } else {
+        button.classList.remove("active");
+      }
+      console.log(button.innerHTML);
     })
-});
-
-
-//Filtrado por checkbox
-const $categoryCheckbox = document.querySelectorAll(".categoryCheckbox");
-
-Array.from($categoryCheckbox).forEach((categoryCheck)=>{
-    categoryCheck.addEventListener("change", function (e){
-        const searchValue = e.target.value.toLowerCase();
-        const checked = e.target.checked;
-        console.log(searchValue);
-        console.log(checked);
-
-        //Utilizar un array para pushear las categorias seleccionadas......
-        let checkInputs = [];
-
-        $cards.forEach((card)=>{
-            // console.log("card", card);
-            const $cardCategory = card.querySelector(".card-category").textContent.toLowerCase();
-            if($cardCategory.includes(searchValue) && checked){
-                card.classList.remove("hidden");
-            }else{
-                card.classList.add("hidden");
-            }
-        })
-        console.log("Select", categoryCheck);
-    })
-})
+    $buttons.forEach((button) => {
+      //Comprobamos si el valor del parametro es igual a lo que tiene el boton en su innerText.
+      if (value.toUpperCase() == button.innerText.toUpperCase()) {
+        button.classList.add("active");
+      } else {
+        button.classList.remove("active");
+      }
+      // console.log(button.innerHTML);
+    }); */
+  
+    //Seleccionamos todas las cards
+    let $elements = document.querySelectorAll(".col");
+    //loop a través de las cards
+    $elements.forEach((element) => {
+      //Para mostrar todos los productos
+      console.log();
+      if (value == "all") {
+        element.classList.remove("hidden");
+        console.log(1);
+      } else {
+        //Comprobamos si el elemento contiene la categoría pasada por parametro
+        if (element.classList.contains(value)) {
+          //Mostramos los elementos que tengan esa categoría
+          element.classList.remove("hidden");
+          console.log(2);
+        } else {
+          //Escondemos los otros elementos
+          element.classList.add("hidden");
+          console.log(3);
+        }
+      }
+    });
+  }
+  
+  //Mostrar los productos inicialmente
+  window.onload = () => {
+    filterProduct("all");
+  };

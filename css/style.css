@@ -110,12 +110,13 @@ header{
 }
 
 .category__inputs{
-    width: 60%;
+    width: 65%;
     display: flex;
+    flex-wrap: wrap;
 }
 
 .category__search{
-    width: 40%;
+    width: 35%;
     text-align: end;
 }
 
@@ -145,6 +146,14 @@ header{
     /* min-width: 250px; */
     min-height: 400px;
     height: fit-content;
+}
+
+.hidden{
+    display: none;
+}
+
+.card-category{
+    display: none;
 }
 
 .card-body{
