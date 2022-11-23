@@ -208,14 +208,28 @@ categorySinDuplicados.forEach((category)=>{
 const $inputEvents = document.getElementById("inputEvents");
 const $inputSearch = document.getElementById("inputSearch");
 const $cards = document.querySelectorAll(".col");
+console.log($cards);
+
 
 $inputEvents.addEventListener("keyup", (event)=>{
+    let containerClassHidden = [];
     // console.log("event.target.value", event.target.value) 
     $cards.forEach((card)=>{
+        
         card.textContent.toLowerCase().includes(event.target.value.toLowerCase())
         ? card.classList.remove("hidden") // Si cae en true la sentencia anterior, ocurre esto
         : card.classList.add("hidden");  // Si cae en false la sentencia anterior, ocurre esto
+        //Código mensaje
+        if(card.classList.contains("hidden")){
+            containerClassHidden.push(card);
+        }
+
     })
+    
+    if(containerClassHidden.length===$cards.length){
+        // console.log("No consiguió ningún elemento");
+        showError("Ajuste los filtros para buscar los eventos deseados");
+    }
 });
 
 
@@ -230,22 +244,65 @@ Array.from($categoryCheckbox).forEach((categoryCheck)=>{
         console.log(checked);
 
         //Utilizar un array para pushear las categorias seleccionadas......
-        let checkInputs = [];
+        // let checkInputs = [];
+        const inputs = document.querySelectorAll('input[type="checkbox"]');
 
-        $cards.forEach((card)=>{
+        const checkedInputs = [];
+
+        inputs.forEach((input) => {
+          if (input.checked) {
+            checkedInputs.push(input.value);
+          }
+        });
+
+        // console.log(checkedInputs);
+
+        // console.log(inputs);
+
+        /* $cards.forEach((card)=>{
             // console.log("card", card);
             const $cardCategory = card.querySelector(".card-category").textContent.toLowerCase();
             if($cardCategory.includes(searchValue) && checked){
                 card.classList.remove("hidden");
-                checkInputs.push(card);
+                // checkInputs.push(card);
             }else{
                 card.classList.add("hidden");
-                showError("Ajuste los filtros para buscar los eventos deseados");
+                // showError("Ajuste los filtros para buscar los eventos deseados");
                 // checkInputs = [];
             }
+        }) */
+        // let containerClassHidden = [];
+
+        $cards.forEach((card)=>{
+            // console.log("card", card);
+            const $cardCategory = card.querySelector(".card-category");
+            console.log($cardCategory);
+            if(checkedInputs.includes($cardCategory.textContent)){
+                card.classList.remove("hidden");
+                // checkInputs.push(card);
+            }else{
+                card.classList.add("hidden");
+                
+            }
+
+            if(checkedInputs.length===0){
+                card.classList.remove("hidden");
+            }
+            
+            //Código mensaje
+            /* if(card.classList.contains("hidden")){
+                containerClassHidden.push(card);
+            } */
+            
+            // console.log(containerClassHidden);
         })
         console.log("categoryCheck", categoryCheck);
-        console.log(checkInputs);
+
+        /* if(containerClassHidden.length===$cards.length){
+            console.log("No consiguió ningún elemento");
+            // showError("Ajuste los filtros para buscar los eventos deseados");
+        } */
+
     })
 })
 
