@@ -248,24 +248,6 @@ const inputs = document.querySelectorAll('input[type="checkbox"]');
 
 //Parametro pasado del boton (categoria)
 function filterProduct(value) {
-    /* let $texto = document.querySelectorAll(".category-tittle");
-    $texto.forEach((button) =>{
-      if (value.toUpperCase() == button.innerText.toUpperCase()) {
-        button.classList.add("active");
-      } else {
-        button.classList.remove("active");
-      }
-      console.log(button.innerHTML);
-    })
-    $buttons.forEach((button) => {
-      //Comprobamos si el valor del parametro es igual a lo que tiene el boton en su innerText.
-      if (value.toUpperCase() == button.innerText.toUpperCase()) {
-        button.classList.add("active");
-      } else {
-        button.classList.remove("active");
-      }
-      // console.log(button.innerHTML);
-    }); */
   
     //Seleccionamos todas las cards
     let $elements = document.querySelectorAll(".col");
@@ -286,6 +268,7 @@ function filterProduct(value) {
           //Escondemos los otros elementos
           element.classList.add("hidden");
           console.log(3);
+          showError("Ajuste los filtros para buscar los eventos deseados");
         }
       }
     });
@@ -295,3 +278,17 @@ function filterProduct(value) {
   window.onload = () => {
     filterProduct("all");
   };
+
+const $mensaje = document.getElementById("mensaje")
+
+function showError(error){
+    let msgError = document.createElement("p");
+    msgError.textContent = error;
+    msgError.classList.add("error");
+    $mensaje.appendChild(msgError);
+
+    //Timer de 3 segundos de duración del mensaje de error
+    setTimeout(()=>{
+        msgError.remove();
+    }, 3000);
+}

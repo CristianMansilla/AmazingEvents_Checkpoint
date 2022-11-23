@@ -99,6 +99,16 @@ header{
     cursor: pointer;
 }
 
+.error{
+    position: absolute;
+    top: 300px;
+    right: 20px;
+    background-color: #94155f;
+    color: white;
+    border-radius: 8px;
+    padding: 10px;
+}
+
 .category{
     padding: 1em 0;
 }

@@ -215,7 +215,6 @@ $inputEvents.addEventListener("keyup", (event)=>{
         card.textContent.toLowerCase().includes(event.target.value.toLowerCase())
         ? card.classList.remove("hidden") // Si cae en true la sentencia anterior, ocurre esto
         : card.classList.add("hidden");  // Si cae en false la sentencia anterior, ocurre esto
-        // SI NO ENCUENTRA RESULTADOS; ESTARÍA RE BUENO MOSTRAR UN MENSAJE EN LA PANTALLA
     })
 });
 
@@ -238,10 +237,28 @@ Array.from($categoryCheckbox).forEach((categoryCheck)=>{
             const $cardCategory = card.querySelector(".card-category").textContent.toLowerCase();
             if($cardCategory.includes(searchValue) && checked){
                 card.classList.remove("hidden");
+                checkInputs.push(card);
             }else{
                 card.classList.add("hidden");
+                showError("Ajuste los filtros para buscar los eventos deseados");
+                // checkInputs = [];
             }
         })
-        console.log("Select", categoryCheck);
+        console.log("categoryCheck", categoryCheck);
+        console.log(checkInputs);
     })
 })
+
+const $mensaje = document.getElementById("mensaje")
+
+function showError(error){
+    let msgError = document.createElement("p");
+    msgError.textContent = error;
+    msgError.classList.add("error");
+    $mensaje.appendChild(msgError);
+
+    //Timer de 3 segundos de duración del mensaje de error
+    setTimeout(()=>{
+        msgError.remove();
+    }, 3000);
+}
