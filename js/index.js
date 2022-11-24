@@ -206,7 +206,7 @@ categorySinDuplicados.forEach((category)=>{
 
 //Filtrado mediante input de tipo text
 const $inputEvents = document.getElementById("inputEvents");
-const $inputSearch = document.getElementById("inputSearch");
+// const $inputSearch = document.getElementById("inputSearch");
 const $cards = document.querySelectorAll(".col");
 console.log($cards);
 
@@ -215,20 +215,18 @@ $inputEvents.addEventListener("keyup", (event)=>{
     let containerClassHidden = [];
     // console.log("event.target.value", event.target.value) 
     $cards.forEach((card)=>{
-        
         card.textContent.toLowerCase().includes(event.target.value.toLowerCase())
         ? card.classList.remove("hidden") // Si cae en true la sentencia anterior, ocurre esto
         : card.classList.add("hidden");  // Si cae en false la sentencia anterior, ocurre esto
+        
         //Código mensaje
         if(card.classList.contains("hidden")){
             containerClassHidden.push(card);
         }
-
     })
     
     if(containerClassHidden.length===$cards.length){
-        // console.log("No consiguió ningún elemento");
-        showError("Ajuste los filtros para buscar los eventos deseados");
+        showError("Evento no encontrado, compruebe nuevamente que haya escrito correctamente!");
     }
 });
 
@@ -238,27 +236,37 @@ const $categoryCheckbox = document.querySelectorAll(".categoryCheckbox");
 
 Array.from($categoryCheckbox).forEach((categoryCheck)=>{
     categoryCheck.addEventListener("change", function (e){
-        const searchValue = e.target.value.toLowerCase();
-        const checked = e.target.checked;
-        console.log(searchValue);
-        console.log(checked);
-
-        //Utilizar un array para pushear las categorias seleccionadas......
-        // let checkInputs = [];
         const inputs = document.querySelectorAll('input[type="checkbox"]');
-
         const checkedInputs = [];
-
+        
         inputs.forEach((input) => {
-          if (input.checked) {
-            checkedInputs.push(input.value);
-          }
+            if (input.checked) {
+                checkedInputs.push(input.value);
+            }
         });
 
-        // console.log(checkedInputs);
+        $cards.forEach((card)=>{
+            const $cardCategory = card.querySelector(".card-category").textContent;
 
-        // console.log(inputs);
+            if(checkedInputs.includes($cardCategory)){
+                card.classList.remove("hidden");
+            }else{
+                card.classList.add("hidden");
+            }
 
+            if(checkedInputs.length===0){
+                card.classList.remove("hidden");
+            }
+        })
+        console.log("categoryCheck", categoryCheck);
+        console.log(checkedInputs);
+        
+
+        //Forma anterior
+        // const searchValue = e.target.value.toLowerCase();
+        // const checked = e.target.checked;
+        // console.log(searchValue);
+        // console.log(checked);
         /* $cards.forEach((card)=>{
             // console.log("card", card);
             const $cardCategory = card.querySelector(".card-category").textContent.toLowerCase();
@@ -271,37 +279,6 @@ Array.from($categoryCheckbox).forEach((categoryCheck)=>{
                 // checkInputs = [];
             }
         }) */
-        // let containerClassHidden = [];
-
-        $cards.forEach((card)=>{
-            // console.log("card", card);
-            const $cardCategory = card.querySelector(".card-category");
-            console.log($cardCategory);
-            if(checkedInputs.includes($cardCategory.textContent)){
-                card.classList.remove("hidden");
-                // checkInputs.push(card);
-            }else{
-                card.classList.add("hidden");
-                
-            }
-
-            if(checkedInputs.length===0){
-                card.classList.remove("hidden");
-            }
-            
-            //Código mensaje
-            /* if(card.classList.contains("hidden")){
-                containerClassHidden.push(card);
-            } */
-            
-            // console.log(containerClassHidden);
-        })
-        console.log("categoryCheck", categoryCheck);
-
-        /* if(containerClassHidden.length===$cards.length){
-            console.log("No consiguió ningún elemento");
-            // showError("Ajuste los filtros para buscar los eventos deseados");
-        } */
 
     })
 })

@@ -329,6 +329,7 @@ function paintDom(dateDom){
             <div>
                 <h5 class="card-title">${dateDom.name}</h5>
                 <p class="card-text">${dateDom.description}</p>
+                <p class="card-category">${dateDom.category}</p>
             </div>
             <div class="price d-flex justify-content-between align-items-start">
                 <p>Price $${dateDom.price}</p>
@@ -353,4 +354,95 @@ function compareDate(dataAE){
     });
 }
 compareDate(data);
+
+
+//Renderizar las categorias dinamicamente
+const $categoryInputs = document.getElementById("category__inputs");
+let category = data.eventos.map((event) => event.category);
+let categorySinDuplicados = [...new Set(category)];
+
+function paintCategories(categoryArray){
+    const div = document.createElement("div");
+    div.innerHTML = `
+    <input type="checkbox" name="category${categoryArray}" id="${categoryArray}" class="categoryCheckbox categoryInput" value="${categoryArray}">
+    <label class="category-tittle" for="${categoryArray}">${categoryArray}</label>
+    `
+    $categoryInputs.appendChild(div);
+}
+categorySinDuplicados.forEach((category)=>{
+    paintCategories(category);
+})
+
+//Filtrado mediante input de tipo text
+const $inputEvents = document.getElementById("inputEvents");
+// const $inputSearch = document.getElementById("inputSearch");
+const $cards = document.querySelectorAll(".col");
+console.log($cards);
+
+
+$inputEvents.addEventListener("keyup", (event)=>{
+    let containerClassHidden = [];
+    // console.log("event.target.value", event.target.value) 
+    $cards.forEach((card)=>{
+        card.textContent.toLowerCase().includes(event.target.value.toLowerCase())
+        ? card.classList.remove("hidden") // Si cae en true la sentencia anterior, ocurre esto
+        : card.classList.add("hidden");  // Si cae en false la sentencia anterior, ocurre esto
+        
+        //Código mensaje
+        if(card.classList.contains("hidden")){
+            containerClassHidden.push(card);
+        }
+    })
+    
+    if(containerClassHidden.length===$cards.length){
+        showError("Evento no encontrado, compruebe nuevamente que haya escrito correctamente!");
+    }
+});
+
+
+//Filtrado por checkbox
+const $categoryCheckbox = document.querySelectorAll(".categoryCheckbox");
+
+Array.from($categoryCheckbox).forEach((categoryCheck)=>{
+    categoryCheck.addEventListener("change", function (e){
+        const inputs = document.querySelectorAll('input[type="checkbox"]');
+        const checkedInputs = [];
+        
+        inputs.forEach((input) => {
+            if (input.checked) {
+                checkedInputs.push(input.value);
+            }
+        });
+
+        $cards.forEach((card)=>{
+            const $cardCategory = card.querySelector(".card-category").textContent;
+
+            if(checkedInputs.includes($cardCategory)){
+                card.classList.remove("hidden");
+            }else{
+                card.classList.add("hidden");
+            }
+
+            if(checkedInputs.length===0){
+                card.classList.remove("hidden");
+            }
+        })
+        console.log("categoryCheck", categoryCheck);
+        console.log(checkedInputs);
+    })
+})
+
+const $mensaje = document.getElementById("mensaje")
+
+function showError(error){
+    let msgError = document.createElement("p");
+    msgError.textContent = error;
+    msgError.classList.add("error");
+    $mensaje.appendChild(msgError);
+
+    //Timer de 3 segundos de duración del mensaje de error
+    setTimeout(()=>{
+        msgError.remove();
+    }, 3000);
+}
 

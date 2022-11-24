@@ -41,8 +41,8 @@
 
         <section class="category">
             <form class="category__form">
-                <div class="category__inputs">
-                    <div>
+                <div id="category__inputs" class="category__inputs">
+<!--                     <div>
                         <input type="checkbox" name="category1" id="category1">
                         <label for="category1">Category1</label>
                     </div>
@@ -65,18 +65,20 @@
                     <div>
                         <input type="checkbox" name="category5" id="category5">
                         <label for="category5">Category5</label>
-                    </div>
+                    </div> -->
                 </div>
 
                 <div class="category__search">
-                    <input type="text">
-                    <label><i class="fa-solid fa-magnifying-glass"></i></label>
+                    <input id="inputEvents" type="text">
+                    <label id="inputSearch"><i class="fa-solid fa-magnifying-glass"></i></label>
                 </div>
             </form>
 
             <section id="cards-container" class="category__cards row row-cols-lg-3 row-cols-md-2 row-cols-sm-2 row-cols-1 g-4">
 
             </section>
+
+            <div id="mensaje"></div>
         </section>
     </main>
 
