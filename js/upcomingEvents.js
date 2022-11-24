@@ -407,6 +407,8 @@ Array.from($categoryCheckbox).forEach((categoryCheck)=>{
     categoryCheck.addEventListener("change", function (e){
         const inputs = document.querySelectorAll('input[type="checkbox"]');
         const checkedInputs = [];
+
+        let containerClassHidden = [];
         
         inputs.forEach((input) => {
             if (input.checked) {
@@ -426,7 +428,16 @@ Array.from($categoryCheckbox).forEach((categoryCheck)=>{
             if(checkedInputs.length===0){
                 card.classList.remove("hidden");
             }
+
+            //Código mensaje
+            if(card.classList.contains("hidden")){
+                containerClassHidden.push(card);
+            }
         })
+        console.log(containerClassHidden);
+        if(containerClassHidden.length===5){
+            showError("Ningún evento encontrado en esa categoría!");
+        }
         console.log("categoryCheck", categoryCheck);
         console.log(checkedInputs);
     })
