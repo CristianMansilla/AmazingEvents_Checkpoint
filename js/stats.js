@@ -648,155 +648,333 @@ const data={
         }
     ]
 }
-const $cardsContainer = document.getElementById("cards-container");
+const eventos = data.events;
+// console.log(eventos);
 
-function paintDom(dateDom){
-    const div = document.createElement("div");
-    div.classList.add("col");
-    div.innerHTML = `
-    <div class="card h-210">
-        <img src="../assets/503.jpg" class="card-img-top" alt="">
-        <div class="card-body d-flex flex-column align-items-center">
-            <div>
-                <h5 class="card-title">${dateDom.name}</h5>
-                <p class="card-text">${dateDom.description}</p>
-                <p class="card-category">${dateDom.category}</p>
-            </div>
-            <div class="price d-flex justify-content-between align-items-start">
-                <p>Price $${dateDom.price}</p>
-                <a id="seeMore" class="buttonMore" href="./pages/details.html"><button class="button">See more</button></a>
-            </div>
-        </div>
-    </div>
-    `
-    $cardsContainer.appendChild(div);
-};
+let arrayCompleto = [...eventos];
 
-data.events.forEach((event)=>{
-    paintDom(event)
+//?Events with the highest percentage of attendance
+//Obtengo el porcentaje de asistencias
+const assistanceOrdMenorAMayor = arrayCompleto.map((evento)=>{
+    let assistance = evento.assistance || evento.estimate
+    let percentage = Math.round((100 * Number(assistance))/Number(evento.capacity))
+    return {'name': evento.name, 'percentage': percentage, 'eventId': evento._id, 'capacity': Number(evento.capacity)}
 })
+// console.log(assistanceOrdMenorAMayor);
 
-//Renderizar las categorias dinamicamente
-const $categoryInputs = document.getElementById("category__inputs");
-let category = data.events.map((event) => event.category);
-let categorySinDuplicados = [...new Set(category)];
-// console.log(category);
-// console.log(categorySinDuplicados);
+//Ordeno de menor a mayor
+assistanceOrdMenorAMayor.sort((a,b) => {return a.percentage - b.percentage});
+// console.log(assistanceOrdMenorAMayor);
 
-function paintCategories(categoryArray){
-    const div = document.createElement("div");
-    div.innerHTML = `
-    <input type="checkbox" name="category${categoryArray}" id="${categoryArray}" class="categoryCheckbox categoryInput" value="${categoryArray}">
-    <label class="category-tittle" for="${categoryArray}">${categoryArray}</label>
-    `
-    $categoryInputs.appendChild(div);
-}
-categorySinDuplicados.forEach((category)=>{
-    paintCategories(category);
-})
+//10% de los eventos con mayor asistencia
+const mayAssistance = assistanceOrdMenorAMayor.slice(Math.round(assistanceOrdMenorAMayor.length * 0.9), assistanceOrdMenorAMayor.length).reverse();
+// console.log({mayAssistance})
 
-//Filtrado mediante input de tipo text
-const $inputEvents = document.getElementById("inputEvents");
-// const $inputSearch = document.getElementById("inputSearch");
-const $cards = document.querySelectorAll(".col");
-// console.log($cards);
+//?Events with the lowest percentage of attendance
+//10% de los eventos con mayor asistencia
+const menAssistance = assistanceOrdMenorAMayor.slice(0, Math.round(assistanceOrdMenorAMayor.length * 0.1))
+// console.log({menAssistance})
 
+//?Events with larger capacity
+const capacityOrdMenorAMayor = arrayCompleto.sort((a,b) =>
+    a.capacity - b.capacity
+);
+// console.log({capacityOrdMenorAMayor});
 
-$inputEvents.addEventListener("keyup", (event)=>{
-    let containerClassHidden = [];
-    // console.log("event.target.value", event.target.value) 
-    $cards.forEach((card)=>{
-        card.textContent.toLowerCase().includes(event.target.value.toLowerCase())
-        ? card.classList.remove("hidden") // Si cae en true la sentencia anterior, ocurre esto
-        : card.classList.add("hidden");  // Si cae en false la sentencia anterior, ocurre esto
-        
-        //Código mensaje
-        if(card.classList.contains("hidden")){
-            containerClassHidden.push(card);
-        }
+//slice(inicio, fin);
+let topCapacityEvents = capacityOrdMenorAMayor.slice(capacityOrdMenorAMayor.length - Math.round(capacityOrdMenorAMayor.length * 0.1), capacityOrdMenorAMayor.length).reverse();
+// console.log(topCapacityEvents);
+
+//?Categories
+//Obtengo los eventos pasados que son los que tienen la key --> assistance
+const pastEvents = data.events.filter(event => event.assistance > 0);
+// console.log(pastEvents);
+
+//Obtengo los eventos futuros que son los que tienen la key --> estimate
+const upcomingEvents = data.events.filter(event => event.estimate > 0);
+// console.log(upcomingEvents);
+
+//Obtengo la categoría de los eventos
+let categoryEvents = [];
+
+arrayCompleto.forEach((event) =>{
+    let category = event.category;
+    categoryEvents.push(category);
+    categoryEvents = categoryEvents.filter((category, index) =>{
+        return categoryEvents.indexOf(category) === index;
     })
-    
-    if(containerClassHidden.length===$cards.length){
-        showError("Evento no encontrado, compruebe nuevamente que haya escrito correctamente!");
-    }
 });
+// console.log({categoryEvents})
+
+//?Revenues
+let museumCategoryUpcoming = [];
+let cinemaCategoryUpcoming = [];
+let costumeCategoryUpcoming = [];
+let bookCategoryUpcoming = [];
+let raceCategoryUpcoming = [];
+let musicCategoryUpcoming = [];
+let foodCategoryUpcoming = [];
+
+const separateForCategoryUpcoming = (dataEvents) => {
+
+    const categoryMuseum = dataEvents.filter(events => events.category === "Museum");
+    const categoryCinema = dataEvents.filter(events => events.category === "Cinema");
+    const categoryCostumeParty = dataEvents.filter(events => events.category === "Costume Party");
+    const categoryBookExchange = dataEvents.filter(events => events.category === "Book Exchange");
+    const categoryRace = dataEvents.filter(events => events.category === "Race");
+    const categoryMusicConcert = dataEvents.filter(events => events.category === "Music Concert");
+    const categoryFoodFair = dataEvents.filter(events => events.category === "Food Fair");
+    
+    museumCategoryUpcoming.push(categoryMuseum);
+    cinemaCategoryUpcoming.push(categoryCinema);
+    costumeCategoryUpcoming.push(categoryCostumeParty);
+    bookCategoryUpcoming.push(categoryBookExchange);
+    raceCategoryUpcoming.push(categoryRace);
+    musicCategoryUpcoming.push(categoryMusicConcert);
+    foodCategoryUpcoming.push(categoryFoodFair);
+    
+}
+separateForCategoryUpcoming(upcomingEvents)
+
+let museumCategoryPast = [];
+let cinemaCategoryPast = [];
+let costumeCategoryPast = [];
+let bookCategoryPast = [];
+let raceCategoryPast = [];
+let musicCategoryPast = [];
+let foodCategoryPast = [];
+
+const separateForCategoryPast = (dataEvents) => {
+
+    const categoryMuseum = dataEvents.filter(events => events.category === "Museum");
+    const categoryCinema = dataEvents.filter(events => events.category === "Cinema");
+    const categoryCostumeParty = dataEvents.filter(events => events.category === "Costume Party");
+    const categoryBookExchange = dataEvents.filter(events => events.category === "Book Exchange");
+    const categoryRace = dataEvents.filter(events => events.category === "Race");
+    const categoryMusicConcert = dataEvents.filter(events => events.category === "Music Concert");
+    const categoryFoodFair = dataEvents.filter(events => events.category === "Food Fair");
+    
+    museumCategoryPast.push(categoryMuseum);
+    cinemaCategoryPast.push(categoryCinema);
+    costumeCategoryPast.push(categoryCostumeParty);
+    bookCategoryPast.push(categoryBookExchange);
+    raceCategoryPast.push(categoryRace);
+    musicCategoryPast.push(categoryMusicConcert);
+    foodCategoryPast.push(categoryFoodFair);
+    
+}
+separateForCategoryPast(pastEvents)
+
+//Calcular el total de ganancias por categoria
+const calculateTotalGains = (category) => {
+    let allPrice = [];
+    category[0].forEach((event) => {
+        const estimateAssitance = event.estimate || event.assistance;
+        const priceForEvent = event.price;
+        const estimateGains = estimateAssitance * priceForEvent;
+        allPrice.push(estimateGains);
+    });
+    return allPrice.reduce((total, value) => total + value, 0);
+}
+
+//?Percentage of attendance
+// Porcentaje de asistencia de eventos futuros
+function upcomingEventsAttendancePercentage(event) {
+    let percentage = (event.estimate * 100) / event.capacity
+    return percentage
+}
+
+let upcomingEventsAttendancePercentageArray = upcomingEvents.filter((event) => event.estimate).map((event) => upcomingEventsAttendancePercentage(event))
+
+let upcomingEventsAttendancePercentageAverage =
+upcomingEventsAttendancePercentageArray.reduce((acc, event) => acc + event, 0) / upcomingEventsAttendancePercentageArray.length
 
 
-//Filtrado por checkbox
-const $categoryCheckbox = document.querySelectorAll(".categoryCheckbox");
-
-Array.from($categoryCheckbox).forEach((categoryCheck)=>{
-    categoryCheck.addEventListener("change", function (e){
-        const inputs = document.querySelectorAll('input[type="checkbox"]');
-        const checkedInputs = [];
-        
-        inputs.forEach((input) => {
-            if (input.checked) {
-                checkedInputs.push(input.value);
-            }
-        });
-
-        $cards.forEach((card)=>{
-            const $cardCategory = card.querySelector(".card-category").textContent;
-
-            if(checkedInputs.includes($cardCategory)){
-                card.classList.remove("hidden");
-            }else{
-                card.classList.add("hidden");
-            }
-
-            if(checkedInputs.length===0){
-                card.classList.remove("hidden");
-            }
-        })
-        console.log("categoryCheck", categoryCheck);
-        console.log(checkedInputs);
-        
-
-        //Forma anterior
-        // const searchValue = e.target.value.toLowerCase();
-        // const checked = e.target.checked;
-        // console.log(searchValue);
-        // console.log(checked);
-        /* $cards.forEach((card)=>{
-            // console.log("card", card);
-            const $cardCategory = card.querySelector(".card-category").textContent.toLowerCase();
-            if($cardCategory.includes(searchValue) && checked){
-                card.classList.remove("hidden");
-                // checkInputs.push(card);
-            }else{
-                card.classList.add("hidden");
-                // showError("Ajuste los filtros para buscar los eventos deseados");
-                // checkInputs = [];
-            }
-        }) */
-
+let percentageOfAttendanceUpcoming = ()=>{
+    let percentageOfAttendanceUpcoming = [];
+    categoryEvents.forEach((category)=>{
+        let assistance = upcomingEvents.filter((event) => event.category === category).map((event) => upcomingEventsAttendancePercentage(event))
+        let assistanceAverage = Math.round(assistance.reduce((acc, event) => acc + event, 0) / assistance.length)
+        percentageOfAttendanceUpcoming.push(assistanceAverage);
     })
-})
+    return percentageOfAttendanceUpcoming;
+}
+// console.log(percentageOfAttendanceUpcoming());
 
-const $mensaje = document.getElementById("mensaje")
-
-function showError(error){
-    let msgError = document.createElement("p");
-    msgError.textContent = error;
-    msgError.classList.add("error");
-    $mensaje.appendChild(msgError);
-
-    //Timer de 3 segundos de duración del mensaje de error
-    setTimeout(()=>{
-        msgError.remove();
-    }, 3000);
+// Porcentaje de asistencia de eventos pasados
+function pastEventsAttendancePercentage(event) {
+    let percentage = (event.assistance * 100) / event.capacity
+    return percentage
 }
 
-//Send localstorage
-let cardsTitle = document.querySelectorAll(".card-title")
-// console.log("title", cardsTitle[5].outerText)
-let buttonCards = document.querySelectorAll(".buttonMore")
+let pastEventsAttendancePercentageArray = pastEvents.filter((event) => event.estimate).map((event) => pastEventsAttendancePercentage(event))
 
-for(let i = 0; i < cardsTitle.length; i++ ){
-//   console.log(cardsTitle[i].outerText)
-  
-  buttonCards[i].addEventListener("click", () =>{
-    localStorage.setItem("title", cardsTitle[i].outerText.toLowerCase().replaceAll(" ", "-"))
-  })
+let pastEventsAttendancePercentageAverage =
+pastEventsAttendancePercentageArray.reduce((acc, event) => acc + event, 0) / pastEventsAttendancePercentageArray.length
+
+
+let percentageOfAttendancePast = ()=>{
+    let percentageOfAttendancePast = [];
+    categoryEvents.forEach((category)=>{
+        let assistance = pastEvents.filter((event) => event.category === category).map((event) => pastEventsAttendancePercentage(event))
+        let assistanceAverage = Math.round(assistance.reduce((acc, event) => acc + event, 0) / assistance.length)
+        percentageOfAttendancePast.push(assistanceAverage);
+    })
+    return percentageOfAttendancePast;
 }
+// console.log(percentageOfAttendancePast());
+
+
+
+//*Imprimir tabla
+const tableEventsStatistic = document.getElementById("eventStatistic")
+
+const printTableEvents = () =>{
+    tableEventsStatistic.innerHTML = 
+    `
+    <tr class="table-title table-secondary">
+        <th colspan="3">Events statistics</th>
+    </tr>
+
+    <tr>
+        <td class="encabezado">Events with the highest percentage of attendance</td>
+        <td class="encabezado">Events with the lowest percentage of attendance</td>
+        <td class="encabezado">Events with larger capacity</td>
+    </tr>
+
+    <tr>
+        <td>${mayAssistance[0].name}: ${mayAssistance[0].percentage}%</td>
+        <td>${menAssistance[0].name}: ${menAssistance[0].percentage}%</td>
+        <td>${topCapacityEvents[0].name}: ${topCapacityEvents[0].capacity}</td>
+    </tr>
+
+    <tr>
+        <td>${mayAssistance[1].name}: ${mayAssistance[1].percentage}%</td>
+        <td>${menAssistance[1].name}: ${menAssistance[1].percentage}%</td>
+        <td>${topCapacityEvents[1].name}: ${topCapacityEvents[1].capacity}</td>
+    </tr>
+
+    <tr>
+        <td>${mayAssistance[2].name}: ${mayAssistance[2].percentage}%</td>
+        <td>${menAssistance[2].name}: ${menAssistance[2].percentage}%</td>
+        <td>${topCapacityEvents[2].name}: ${topCapacityEvents[2].capacity}</td>
+    </tr>
+
+    <tr>
+        <td>${mayAssistance[3].name}: ${mayAssistance[3].percentage}%</td>
+        <td>${menAssistance[3].name}: ${menAssistance[3].percentage}%</td>
+        <td>${topCapacityEvents[3].name}: ${topCapacityEvents[3].capacity}</td>
+    </tr>
+
+    <tr>
+        <td>${mayAssistance[4].name}: ${mayAssistance[4].percentage}%</td>
+        <td>${menAssistance[4].name}: ${menAssistance[4].percentage}%</td>
+        <td>${topCapacityEvents[4].name}: ${topCapacityEvents[4].capacity}</td>
+    </tr>
+
+    <tr class="table-title table-secondary">
+        <th colspan="3">Upcoming events statistics by category</th>
+    </tr>
+
+    <tr>
+        <td class="encabezado">Categories</td>
+        <td class="encabezado">Revenues</td>
+        <td class="encabezado">Percentage of attendance</td>
+    </tr>
+
+    <tr>
+        <td>${categoryEvents[0]}</td>
+        <td>$${calculateTotalGains(museumCategoryUpcoming)}</td>
+        <td>${percentageOfAttendanceUpcoming()[0]}%</td>
+    </tr>
+    
+    <tr>
+        <td>${categoryEvents[1]}</td>
+        <td>$${calculateTotalGains(costumeCategoryUpcoming)}</td>
+        <td>${percentageOfAttendanceUpcoming()[1]}%</td>
+    </tr>
+
+    <tr>
+        <td>${categoryEvents[2]}</td>
+        <td>$${calculateTotalGains(cinemaCategoryUpcoming)}</td>
+        <td>${percentageOfAttendanceUpcoming()[2]}%</td>
+    </tr>
+    <tr>
+        <td>${categoryEvents[3]}</td>
+        <td>$${calculateTotalGains(bookCategoryUpcoming)}</td>
+        <td>${percentageOfAttendanceUpcoming()[3]}%</td>
+    </tr>
+
+    <tr>
+        <td>${categoryEvents[4]}</td>
+        <td>$${calculateTotalGains(raceCategoryUpcoming)}</td>
+        <td>${percentageOfAttendanceUpcoming()[4]}%</td>
+    </tr>
+
+    <tr>
+        <td>${categoryEvents[5]}</td>
+        <td>$${calculateTotalGains(musicCategoryUpcoming)}</td>
+        <td>${percentageOfAttendanceUpcoming()[5]}%</td>
+    </tr>
+
+    <tr>
+        <td>${categoryEvents[6]}</td>
+        <td>$${calculateTotalGains(foodCategoryUpcoming)}</td>
+        <td>${percentageOfAttendanceUpcoming()[6]}%</td>
+    </tr>
+
+    <tr class="table-title table-secondary">
+        <th colspan="3">Past events statistic by category</th>
+    </tr>
+
+    <tr>
+        <td class="encabezado">Categories</td>
+        <td class="encabezado">Revenues</td>
+        <td class="encabezado">Percentage of attendance</td>
+    </tr>
+
+    <tr>
+        <td>${categoryEvents[0]}</td>
+        <td>$${calculateTotalGains(museumCategoryPast)}</td>
+        <td>${percentageOfAttendancePast()[0]}%</td>
+    </tr>
+    
+    <tr>
+        <td>${categoryEvents[1]}</td>
+        <td>$${calculateTotalGains(costumeCategoryPast)}</td>
+        <td>${percentageOfAttendancePast()[1]}%</td>
+    </tr>
+
+    <tr>
+        <td>${categoryEvents[2]}</td>
+        <td>$${calculateTotalGains(cinemaCategoryPast)}</td>
+        <td>${percentageOfAttendancePast()[2]}%</td>
+    </tr>
+    <tr>
+        <td>${categoryEvents[3]}</td>
+        <td>$${calculateTotalGains(bookCategoryPast)}</td>
+        <td>${percentageOfAttendancePast()[3]}%</td>
+    </tr>
+
+    <tr>
+        <td>${categoryEvents[4]}</td>
+        <td>$${calculateTotalGains(raceCategoryPast)}</td>
+        <td>${percentageOfAttendancePast()[4]}%</td>
+    </tr>
+
+    <tr>
+        <td>${categoryEvents[5]}</td>
+        <td>$${calculateTotalGains(musicCategoryPast)}</td>
+        <td>${percentageOfAttendancePast()[5]}%</td>
+    </tr>
+
+    <tr>
+        <td>${categoryEvents[6]}</td>
+        <td>$${calculateTotalGains(foodCategoryPast)}</td>
+        <td>${percentageOfAttendancePast()[6]}%</td>
+    </tr>
+    `;
+}
+
+//Llamar a la función para imprimir los datos de la tabla
+printTableEvents()

@@ -320,6 +320,25 @@ header{
     margin: 0;
 }
 
+.descriptionDetails{
+    text-align: center;
+}
+
+.priceDetails{
+    margin-top: 2em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* background-color: red; */
+    width: 80%;
+}
+
+.priceDetails>p{
+    font-weight: bold;
+    font-size: 1.2em;
+    padding-top: 0.2em;
+}
+
 /* Stats */
 .containerTable{
     width: 90%;
@@ -328,6 +347,15 @@ header{
 
 tbody>tr>td{
     height: 2em;
+}
+
+tbody>tr>th{
+    text-align: start;
+    text-transform: uppercase;
+}
+
+.encabezado{
+    font-weight: bold;
 }
 
 /** Footer **/
